@@ -1,0 +1,32 @@
+{
+  "name": "tsrpc-miniapp",
+  "version": "0.0.1",
+  "description": "TSRPC MiniApp Client (Wechat App, QQ App...)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && npx rollup -c && cp package.json LICENSE README.md dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k8w/tsrpc-miniapp.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/k8w/tsrpc-miniapp/issues"
+  },
+  "homepage": "https://github.com/k8w/tsrpc-miniapp#readme",
+  "types": "index.d.ts",
+  "devDependencies": {
+    "rollup": "^1.27.13",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "rollup-plugin-uglify": "^6.0.4"
+  },
+  "dependencies": {
+    "k8w-extend-native": "*",
+    "k8w-super-promise": "*",
+    "tsbuffer": "^1.2.5",
+    "tsrpc-proto": "*"
+  }
+}
