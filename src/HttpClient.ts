@@ -104,7 +104,6 @@ export class HttpClient<ServiceType extends BaseServiceType = any> {
                 url: this._options.server,
                 data: arrayBuffer,
                 method: 'POST',
-                dataType: 'arraybuffer',
                 responseType: 'arraybuffer',
                 success: res => {
                     this._resolveBufRes(res.data, res.statusCode, sn, rs, rj);
@@ -163,8 +162,9 @@ export class HttpClient<ServiceType extends BaseServiceType = any> {
 
 }
 
+declare let wx: any;
 const defaultOptions: HttpClientOptions<any> = {
-    miniappObj: null as any,
+    miniappObj: typeof wx !== 'undefined' ? wx : undefined,
     server: 'http://localhost:3000',
     proto: { types: {}, services: [] },
     logger: console

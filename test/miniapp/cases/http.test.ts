@@ -1,18 +1,19 @@
 import KUnit from 'kunit';
 import { assert } from 'chai';
-import { HttpClient } from '../../../src/HttpClient';
+import { TsrpcClient } from 'tsrpc-miniapp';
 import { serviceProto } from '../protocols/proto';
 import { MsgChat } from '../protocols/MsgChat';
 import { TsrpcError } from 'tsrpc-proto';
 
-export let client = new HttpClient({
+let client = new TsrpcClient({
+    miniappObj: wx,
     server: 'http://localhost:3000',
     proto: serviceProto
 });
 
-export const kunit = new KUnit();
+export const httpCase = new KUnit();
 
-kunit.test('CallApi normally', async function () {
+httpCase.test('CallApi normally', async function () {
     // Succ
     assert.deepStrictEqual(await client.callApi('Test', {
         name: 'Req1'
@@ -26,7 +27,7 @@ kunit.test('CallApi normally', async function () {
         });
 });
 
-kunit.test('Inner Error', async function () {
+httpCase.test('Inner Error', async function () {
     for (let v of ['Test', 'a/b/c/Test']) {
         assert.deepStrictEqual(await client.callApi(v as any, {
             name: 'InnerError'
@@ -37,12 +38,12 @@ kunit.test('Inner Error', async function () {
         })), {
                 isSucc: false,
                 message: 'Internal server error',
-                info: 'INTERNAL_ERR'
+                info: { "code": "INTERNAL_ERR", "isServerError": true }
             });
     }
 })
 
-kunit.test('TsrpcError', async function () {
+httpCase.test('TsrpcError', async function () {
     for (let v of ['Test', 'a/b/c/Test']) {
         assert.deepStrictEqual(await client.callApi(v as any, {
             name: 'TsrpcError'
@@ -58,7 +59,7 @@ kunit.test('TsrpcError', async function () {
     }
 })
 
-kunit.test('sendMsg', async function () {
+httpCase.test('sendMsg', async function () {
     let msg: MsgChat = {
         channel: 123,
         userName: 'fff',
@@ -69,7 +70,7 @@ kunit.test('sendMsg', async function () {
     await client.sendMsg('Chat', msg);
 })
 
-kunit.test('cancel', async function () {
+httpCase.test('cancel', async function () {
     let result: any | undefined;
     let promise = client.callApi('Test', { name: 'aaaaaaaa' });
     setTimeout(() => {
@@ -87,11 +88,12 @@ kunit.test('cancel', async function () {
     })
 })
 
-kunit.test('error', async function () {
-    let client1 = new HttpClient({
+httpCase.test('error', async function () {
+    let client1 = new TsrpcClient({
+        miniappObj: wx,
         server: 'http://localhost:9999',
         proto: serviceProto
-    })
+    });
 
     let err1: TsrpcError | undefined;
     await client1.callApi('Test', { name: 'xx' }).catch(e => {
@@ -101,8 +103,10 @@ kunit.test('error', async function () {
     assert.deepStrictEqual(err1!.info.isNetworkError, true);
 })
 
-kunit.test('client timeout', async function () {
-    let client = new HttpClient({
+httpCase.test('client timeout', async function () {
+    let client = new TsrpcClient({
+        miniappObj: wx,
+        server: 'http://localhost:3000',
         timeout: 100,
         proto: serviceProto
     });

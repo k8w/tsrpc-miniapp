@@ -4,8 +4,9 @@
   "description": "TSRPC MiniApp Client (Wechat App, QQ App...)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist && npx rollup -c && cp package.json LICENSE README.md dist/"
+    "test": "npm run build && cd dist && npm link && cd ../test/server && npm i && cd ../miniapp && npm i && npm run build && cd ../ && START ts-node server && cd .. && echo \"请使用开发者工具打开test/miniapp目录完成测试\"",
+    "build": "rm -rf dist && npx rollup -c && cp package.json LICENSE README.md dist/",
+    "build:debug": "rm -rf dist && npx tsc -d && cp package.json LICENSE README.md dist/"
   },
   "repository": {
     "type": "git",

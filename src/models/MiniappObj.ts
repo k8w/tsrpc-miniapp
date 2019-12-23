@@ -9,7 +9,7 @@ export interface RequestOptions {
     data?: string | object | ArrayBuffer,
     header?: object,
     method?: 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'TRACE' | 'CONNECT',
-    dataType?: 'json'|'arraybuffer',
+    dataType?: 'json' | '其他',
     responseType?: 'text' | 'arraybuffer',
     success?: (res: {
         data: string | object | ArrayBuffer,
@@ -44,13 +44,13 @@ export interface SocketTask {
         fail?: (res: any) => void,
         complete?: (res: any) => void
     }): void;
-    close(
+    close(options: {
         code?: number,
         reason?: string,
         success?: (res: any) => void,
         fail?: (res: any) => void,
         complete?: (res: any) => void
-    ): void;
+    }): void;
     onOpen(callback: (res: { header: object }) => void): void;
     onClose(callback: (res: { code: number, reason: string }) => void): void;
     onError(callback: (res: { errMsg: string }) => void): void;

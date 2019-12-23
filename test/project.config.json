@@ -5,20 +5,29 @@
 		"ignore": []
 	},
 	"setting": {
-		"urlCheck": true,
+		"urlCheck": false,
 		"es6": true,
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
-		"autoAudits": false,
 		"coverView": true,
+		"autoAudits": false,
 		"showShadowRootInWxmlPanel": true,
-		"scopeDataCheck": false
+		"scopeDataCheck": false,
+		"checkInvalidKey": true,
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		},
+		"nodeModules": false
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.9.4",
 	"appid": "wx45dfe3f30c0c8d0a",
-	"projectname": "TSRPC MiniApp 测试",
+	"projectname": "TSRPC%20MiniApp%20%E6%B5%8B%E8%AF%95",
 	"debugOptions": {
 		"hidedInDevtools": []
 	},
