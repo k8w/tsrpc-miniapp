@@ -21,10 +21,10 @@
   "devDependencies": {
     "rollup": "^1.27.13",
     "rollup-plugin-typescript2": "^0.25.3",
-    "rollup-plugin-uglify": "^6.0.4"
+    "rollup-plugin-uglify": "^6.0.4",
+    "typescript": "^3.7.4"
   },
   "dependencies": {
-    "k8w-extend-native": "*",
     "k8w-super-promise": "*",
     "tsbuffer": "^1.2.5",
     "tsrpc-proto": "*"
