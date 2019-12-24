@@ -44,7 +44,7 @@ export interface SocketTask {
         fail?: (res: any) => void,
         complete?: (res: any) => void
     }): void;
-    close(options: {
+    close(options?: {
         code?: number,
         reason?: string,
         success?: (res: any) => void,
