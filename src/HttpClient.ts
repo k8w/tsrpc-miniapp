@@ -36,7 +36,7 @@ export class HttpClient<ServiceType extends BaseServiceType = any> {
         // GetService
         let service = this.serviceMap.apiName2Service[apiName as string];
         if (!service) {
-            throw new Error('Invalid api name: ' + apiName);
+            throw new TsrpcError('Invalid api name: ' + apiName, { isClientError: true });
         }
 
         // Encode
@@ -53,7 +53,7 @@ export class HttpClient<ServiceType extends BaseServiceType = any> {
             }
             catch (e) {
                 this.logger.log(`[ApiErr] #${sn}`, 'parse server output error', e);
-                throw e;
+                throw new TsrpcError('Parse server output error', { isServerError: true, innerError: e });
             }
             if (parsed.type !== 'api') {
                 throw new TsrpcError('Invalid response', 'INTERNAL_ERR');
@@ -64,7 +64,7 @@ export class HttpClient<ServiceType extends BaseServiceType = any> {
             }
             else {
                 this.logger.log(`[ApiErr] #${sn}`, parsed.error)
-                throw parsed.error;
+                throw new TsrpcError(parsed.error.message, parsed.error.info);
             }
         })
     }
@@ -73,7 +73,7 @@ export class HttpClient<ServiceType extends BaseServiceType = any> {
         // GetService
         let service = this.serviceMap.msgName2Service[msgName as string];
         if (!service) {
-            throw new Error('Invalid msg name: ' + msgName);
+            throw new TsrpcError('Invalid msg name: ' + msgName, { isClientError: true });
         }
 
         let buf = TransportDataUtil.encodeMsg(this.tsbuffer, service, msg);
@@ -150,7 +150,7 @@ export class HttpClient<ServiceType extends BaseServiceType = any> {
         return promise;
     }
 
-    private async _resolveBufRes(data: ArrayBuffer | string|object, statusCode: number, sn: number, rs: Function, rj: Function) {
+    private async _resolveBufRes(data: ArrayBuffer | string | object, statusCode: number, sn: number, rs: Function, rj: Function) {
         if (!(data instanceof ArrayBuffer)) {
             this.logger.warn(`Response is empty, SN=${sn}`);
             rj(new TsrpcError('Response is empty', { isServerError: true, code: 'EMPTY_RES', httpCode: statusCode }))
