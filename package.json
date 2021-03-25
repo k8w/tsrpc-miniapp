@@ -1,11 +1,11 @@
 {
   "name": "tsrpc-miniapp",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "TSRPC MiniApp Client (Wechat App, QQ App...)",
   "main": "index.js",
   "scripts": {
     "test": "npm run build && cd dist && npm link && cd ../test/server && npm i && cd ../miniapp && npm i && npm run build && cd ../ && START ts-node server && cd .. && echo \"请使用开发者工具打开test/miniapp目录完成测试\"",
-    "build": "rm -rf dist && npx rollup -c && cp package.json LICENSE README.md dist/",
+    "build": "rm -rf dist && npx rollup -c && cp package.json package-lock.json LICENSE README.md dist/",
     "build:debug": "rm -rf dist && npx tsc -d && cp package.json LICENSE README.md dist/"
   },
   "repository": {
@@ -20,14 +20,14 @@
   "homepage": "https://github.com/k8w/tsrpc-miniapp#readme",
   "types": "index.d.ts",
   "devDependencies": {
-    "rollup": "^1.27.13",
+    "rollup": "^1.32.1",
     "rollup-plugin-typescript2": "^0.25.3",
     "rollup-plugin-uglify": "^6.0.4",
-    "typescript": "^3.7.4"
+    "typescript": "^3.9.9"
   },
   "dependencies": {
-    "k8w-super-promise": "*",
-    "tsbuffer": "^1.3.3",
+    "k8w-super-promise": "^0.2.10",
+    "tsbuffer": "^1.3.6",
     "tsrpc-proto": "^1.1.6"
   }
 }
