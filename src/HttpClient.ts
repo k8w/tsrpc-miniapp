@@ -1,180 +1,217 @@
-import { BaseServiceType, ServiceProto, TsrpcError } from 'tsrpc-proto';
-import { Logger } from './models/Logger';
-import { ServiceMap, ServiceMapUtil } from './models/ServiceMapUtil';
-import { TSBuffer } from 'tsbuffer';
-import { Counter } from './models/Counter';
-import { TransportDataUtil, ParsedServerOutput } from './models/TransportDataUtil';
-import SuperPromise from 'k8w-super-promise';
-import { TransportOptions } from './models/TransportOptions';
-import { MiniappObj, RequestTask } from './models/MiniappObj';
+import { EncodeOutput } from 'tsbuffer';
+import { ApiService, BaseClient, BaseClientOptions, defaultBaseClientOptions, MsgService, PendingApiItem, TransportDataUtil, TransportOptions } from "tsrpc-base-client";
+import { ApiReturn, BaseServiceType, ServiceProto, TsrpcError, TsrpcErrorType } from 'tsrpc-proto';
+import { MiniappObj } from './MiniappObj';
 
-export class HttpClient<ServiceType extends BaseServiceType = any> {
+export class HttpClient<ServiceType extends BaseServiceType> extends BaseClient<ServiceType> {
 
-    private _miniappObj: MiniappObj;
-    private _options: HttpClientOptions<ServiceType>;
-    serviceMap: ServiceMap;
-    tsbuffer: TSBuffer;
-    logger: Logger;
+    readonly type = 'SHORT';
 
-    private _snCounter = new Counter(1);
+    miniappObj: MiniappObj;
+    private _jsonServer: string;
 
-    constructor(options?: Partial<HttpClientOptions<ServiceType>>) {
-        this._options = Object.assign({}, defaultOptions, options);
-        this.serviceMap = ServiceMapUtil.getServiceMap(this._options.proto);
-        this.tsbuffer = new TSBuffer(this._options.proto.types);
-        this.logger = this._options.logger;
+    readonly options!: HttpClientOptions;
+    constructor(proto: ServiceProto<ServiceType>, options?: Partial<HttpClientOptions>) {
+        super(proto, {
+            ...defaultHttpClientOptions,
+            ...options
+        });
+        this._jsonServer = this.options.server + (this.options.server.endsWith('/') ? '' : '/');
 
-        this._miniappObj = this._options.miniappObj;
-        if (!this._miniappObj) {
-            throw new Error('MiniappObj is not set!');
+        this.miniappObj = this.options.miniappObj;
+        if (!this.miniappObj) {
+            throw new Error('options.miniappObj is not set');
         }
 
-        this.logger.log('TSRPC HTTP Client :', this._options.server);
+        this.logger?.log('TSRPC HTTP Client :', this.options.server);
     }
 
-    callApi<T extends keyof ServiceType['req']>(apiName: T, req: ServiceType['req'][T], options: TransportOptions = {}): SuperPromise<ServiceType['res'][T], TsrpcError> {
-        // GetService
-        let service = this.serviceMap.apiName2Service[apiName as string];
-        if (!service) {
-            throw new TsrpcError('Invalid api name: ' + apiName, { isClientError: true });
+    protected _encodeApiReq(service: ApiService, req: any, pendingItem: PendingApiItem): EncodeOutput {
+        if (this.options.json) {
+            if (this.options.jsonPrune) {
+                let opPrune = this.tsbuffer.prune(req, pendingItem.service.reqSchemaId);
+                if (!opPrune.isSucc) {
+                    return opPrune;
+                }
+                req = opPrune.pruneOutput;
+            }
+            return {
+                isSucc: true,
+                buf: JSON.stringify(req) as any
+            }
         }
-
-        // Encode
-        let buf = TransportDataUtil.encodeApiReq(this.tsbuffer, service, req);
-        let sn = this._snCounter.getNext();
-        this.logger.log(`[ApiReq] #${sn}`, apiName, req);
-
-        // Send
-        return this._sendBuf('api', buf, sn, options).then(resBuf => {
-            // Parsed res
-            let parsed: ParsedServerOutput;
-            try {
-                parsed = TransportDataUtil.parseServerOutout(this.tsbuffer, this.serviceMap, resBuf);
-            }
-            catch (e) {
-                this.logger.log(`[ApiErr] #${sn}`, 'parse server output error', e);
-                throw new TsrpcError('Parse server output error', { isServerError: true, innerError: e });
-            }
-            if (parsed.type !== 'api') {
-                throw new TsrpcError('Invalid response', 'INTERNAL_ERR');
-            }
-            if (parsed.isSucc) {
-                this.logger.log(`[ApiRes] #${sn}`, parsed.res)
-                return parsed.res;
-            }
-            else {
-                this.logger.log(`[ApiErr] #${sn}`, parsed.error)
-                throw new TsrpcError(parsed.error.message, parsed.error.info);
-            }
-        })
-    }
-
-    sendMsg<T extends keyof ServiceType['msg']>(msgName: T, msg: ServiceType['msg'][T], options: TransportOptions = {}): SuperPromise<void, TsrpcError> {
-        // GetService
-        let service = this.serviceMap.msgName2Service[msgName as string];
-        if (!service) {
-            throw new TsrpcError('Invalid msg name: ' + msgName, { isClientError: true });
+        else {
+            return TransportDataUtil.encodeApiReq(this.tsbuffer, service, req, undefined);
         }
-
-        let buf = TransportDataUtil.encodeMsg(this.tsbuffer, service, msg);
-        let sn = this._snCounter.getNext();
-        this.logger.log(`[SendMsg] #${sn}`, msgName, msg);
-
-        return this._sendBuf('msg', buf, sn, options).then(() => { })
     }
 
-    protected _sendBuf(type: 'api' | 'msg', buf: Uint8Array, sn: number, options: TransportOptions = {}): SuperPromise<Uint8Array, TsrpcError> {
-        let timeout = options.timeout || this._options.timeout;
-        let timer: any;
-        let promiseRj: Function;
-        let reqTask: RequestTask;
-
-        let promise = new SuperPromise<Uint8Array, TsrpcError>(async (rs, rj) => {
-            promiseRj = rj;
-
-            let arrayBuffer: ArrayBuffer;
-            if (buf.byteOffset === 0 && buf.byteLength === buf.buffer.byteLength) {
-                arrayBuffer = buf.buffer;
+    protected _encodeClientMsg(service: MsgService, msg: any): EncodeOutput {
+        if (this.options.json) {
+            if (this.options.jsonPrune) {
+                let opPrune = this.tsbuffer.prune(msg, service.msgSchemaId);
+                if (!opPrune.isSucc) {
+                    return opPrune;
+                }
+                msg = opPrune.pruneOutput;
             }
-            else {
-                arrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+            return {
+                isSucc: true,
+                buf: JSON.stringify(msg) as any
             }
+        }
+        else {
+            return TransportDataUtil.encodeClientMsg(this.tsbuffer, service, msg);
+        }
+    }
 
-            reqTask = this._miniappObj.request({
-                url: this._options.server,
-                data: arrayBuffer,
-                method: 'POST',
-                responseType: 'arraybuffer',
-                success: res => {
-                    this._resolveBufRes(res.data, res.statusCode, sn, rs, rj);
-                },
-                fail: res => {
-                    rj(new TsrpcError('Network Error', { ...res, isNetworkError: true }));
+    protected async _sendBuf(buf: Uint8Array, options: HttpClientTransportOptions, serviceId: number, pendingApiItem?: PendingApiItem): Promise<{ err?: TsrpcError | undefined; }> {
+        let sn = pendingApiItem?.sn;
+        let promise = new Promise<{ err?: TsrpcError | undefined; }>(async rs => {
+            // Pre Flow
+            if (!this.options.json) {
+                let pre = await this.flows.preSendBufferFlow.exec({ buf: buf, sn: pendingApiItem?.sn }, this.logger);
+                if (!pre) {
                     return;
                 }
-            })
-        })
-
-        promise.onCancel(() => {
-            if (!promise.isDone) {
-                this.logger.log(`[${type === 'api' ? 'ApiCancel' : 'MsgCancel'}] #${sn}`);
+                buf = pre.buf;
             }
-            reqTask.abort();
-        });
 
-        // Timeout Timer
-        if (timeout) {
-            timer = setTimeout(() => {
-                if (!promise.isCanceled && !promise.isDone) {
-                    this.logger.log(`[${type === 'api' ? 'ApiTimeout' : 'MsgTimeout'}] #${sn}`);
-                    promiseRj(new TsrpcError('Request Timeout', 'TIMEOUT'));
+            // Do Send
+            this.options.debugBuf && this.logger?.debug('[SendBuf]' + (sn ? (' #' + sn) : ''), `length=${buf.length}`, buf);
+            let data: ArrayBuffer | string;
+            if (this.options.json) {
+                data = buf as any as string;
+            }
+            else {
+                if (buf.byteOffset === 0 && buf.byteLength === buf.buffer.byteLength) {
+                    data = buf.buffer;
+                }
+                else {
+                    data = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+                }
+            }
+            let reqTask = this.miniappObj.request({
+                url: this.options.json ? this._jsonServer + this.serviceMap.id2Service[serviceId].name : this.options.server,
+                data: data,
+                method: 'POST',
+                responseType: this.options.json ? 'text' : 'arraybuffer',
+                success: res => {
+                    pendingApiItem && this._onApiRes(res.data as ArrayBuffer | string, pendingApiItem);
+                },
+                fail: res => {
+                    pendingApiItem?.onReturn?.({
+                        isSucc: false,
+                        err: new TsrpcError({
+                            message: 'Network Error',
+                            type: TsrpcErrorType.NetworkError,
+                            innerErr: res
+                        })
+                    });
+                },
+                complete: res => {
+                    rs({});
+                }
+            });
+
+            if (pendingApiItem) {
+                pendingApiItem.onAbort = () => {
                     reqTask.abort();
                 }
-            }, timeout);
-        }
-        promise.then(v => {
-            if (timer) {
-                clearTimeout(timer);
-                timer = undefined;
             }
-            return v;
         });
-        promise.catch(e => {
-            if (timer) {
-                clearTimeout(timer);
-                timer = undefined;
+
+        promise.catch().then(() => {
+            if (pendingApiItem) {
+                pendingApiItem.onAbort = undefined;
             }
-            throw e;
         })
 
         return promise;
     }
 
-    private async _resolveBufRes(data: ArrayBuffer | string | object, statusCode: number, sn: number, rs: Function, rj: Function) {
-        if (!(data instanceof ArrayBuffer)) {
-            this.logger.warn(`Response is empty, SN=${sn}`);
-            rj(new TsrpcError('Response is empty', { isServerError: true, code: 'EMPTY_RES', httpCode: statusCode }))
-            return;
+    private async _onApiRes(data: ArrayBuffer | string, pendingApiItem: PendingApiItem) {
+        // JSON
+        if (this.options.json) {
+            let ret: ApiReturn<any>;
+            try {
+                ret = JSON.parse(data as string);
+            }
+            catch (e) {
+                ret = {
+                    isSucc: false,
+                    err: {
+                        message: e.message,
+                        type: TsrpcErrorType.ServerError,
+                        responseData: data
+                    }
+                }
+            }
+            if (ret.isSucc) {
+                if (this.options.jsonPrune) {
+                    let opPrune = this.tsbuffer.prune(ret.res, pendingApiItem.service.resSchemaId);
+                    if (opPrune.isSucc) {
+                        ret.res = opPrune.pruneOutput;
+                    }
+                    else {
+                        ret = {
+                            isSucc: false,
+                            err: new TsrpcError('Invalid Server Output', {
+                                type: TsrpcErrorType.ClientError,
+                                innerErr: opPrune.errMsg
+                            })
+                        }
+                    }
+                }
+            }
+            else {
+                ret.err = new TsrpcError(ret.err);
+            }
+            pendingApiItem.onReturn?.(ret);
         }
-
-        rs(new Uint8Array(data));
+        // ArrayBuffer
+        else {
+            this._onRecvBuf(new Uint8Array(data as ArrayBuffer), pendingApiItem);
+        }
     }
 
 }
 
-declare let wx: any;
-const defaultOptions: HttpClientOptions<any> = {
-    miniappObj: typeof wx !== 'undefined' ? wx : undefined,
-    server: 'http://localhost:3000',
-    proto: { types: {}, services: [] },
-    logger: console
+const defaultHttpClientOptions: HttpClientOptions = {
+    ...defaultBaseClientOptions,
+    server: 'http://127.0.0.1:3000',
+    miniappObj: typeof wx !== 'undefined' ? wx : undefined as any,
+    json: false,
+    jsonPrune: true
 }
 
-export interface HttpClientOptions<ServiceType extends BaseServiceType> {
-    miniappObj: MiniappObj;
+export interface HttpClientTransportOptions extends TransportOptions {
+    /**
+     * Data send progress
+     * @param ratio - 0~1
+     */
+    onProgress: (ratio: number) => void;
+}
+
+export interface HttpClientOptions extends BaseClientOptions {
+    /** Server URL */
     server: string;
-    proto: ServiceProto<ServiceType>;
-    logger: Logger;
-    /** API超时时间（毫秒） */
-    timeout?: number;
+
+    /**
+     * MiniApp API Object
+     * Wechat: wx
+     * QQ MiniApp: qq
+     * ByteDance MiniApp: tt
+     */
+    miniappObj: MiniappObj
+
+    /** 
+     * Use JSON instead of Buffer
+     * @defaultValue false
+     */
+    json: boolean;
+    /**
+     * 是否剔除协议中未定义的多余字段
+     * 默认为 `true`
+     */
+    jsonPrune: boolean;
 }
