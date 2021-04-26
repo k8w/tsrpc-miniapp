@@ -94,6 +94,9 @@ export class HttpClient<ServiceType extends BaseServiceType> extends BaseClient<
                 url: this.options.json ? this._jsonServer + this.serviceMap.id2Service[serviceId].name : this.options.server,
                 data: data,
                 method: 'POST',
+                header: {
+                    'content-type': this.options.json ? 'application/json' : 'application/octet-stream'
+                },
                 responseType: this.options.json ? 'text' : 'arraybuffer',
                 success: res => {
                     pendingApiItem && this._onApiRes(res.data as ArrayBuffer | string, pendingApiItem);
@@ -202,7 +205,7 @@ export interface HttpClientOptions extends BaseClientOptions {
      * QQ MiniApp: qq
      * ByteDance MiniApp: tt
      */
-    miniappObj: MiniappObj
+    miniappObj: any
 
     /** 
      * Use JSON instead of Buffer

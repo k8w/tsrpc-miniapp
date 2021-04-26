@@ -3,21 +3,18 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "build": "npm link tsrpc-miniapp && npx webpack",
-    "dev": "webpack -w"
+    "build": "rm -rf dist && npx webpack",
+    "dev": "rm -rf dist && npx webpack -w"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "chai": "^4.2.0",
-    "kunit": "^1.2.2"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/chai": "^4.2.7",
-    "miniprogram-api-typings": "^2.9.4",
-    "ts-loader": "^6.2.1",
-    "webpack": "^4.41.4",
-    "webpack-cli": "^3.3.10"
+    "@types/chai": "^4.2.17",
+    "copy-webpack-plugin": "^8.1.1",
+    "ts-loader": "^9.1.1",
+    "webpack": "^5.35.1",
+    "webpack-cli": "^4.6.0"
   },
   "description": ""
 }

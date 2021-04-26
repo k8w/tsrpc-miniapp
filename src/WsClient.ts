@@ -68,7 +68,7 @@ export class WsClient<ServiceType extends BaseServiceType> extends BaseClient<Se
     }
 
     private _status: WsClientStatus = WsClientStatus.Closed;
-    public get status() : WsClientStatus {
+    public get status(): WsClientStatus {
         return this._status;
     }
     public set status(v: WsClientStatus) {
@@ -147,11 +147,11 @@ export class WsClient<ServiceType extends BaseServiceType> extends BaseClient<Se
             });
 
             ws.onMessage(e => {
-                if (e.data instanceof ArrayBuffer) {
-                    this._onRecvBuf(new Uint8Array(e.data))
+                if (typeof e.data === 'string') {
+                    this.logger?.error('[Unresolved Data]', e.data)
                 }
                 else {
-                    this.logger?.error('[Unresolved Data]', e.data)
+                    this._onRecvBuf(new Uint8Array(e.data))
                 }
             });
         });
@@ -192,7 +192,7 @@ export interface WsClientOptions extends BaseClientOptions {
      * QQ MiniApp: qq
      * ByteDance MiniApp: tt
      */
-    miniappObj: MiniappObj;
+    miniappObj: any;
     /** Extra options to wx.connectSocket */
     connectSocketOptions?: object;
 

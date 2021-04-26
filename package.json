@@ -25,9 +25,12 @@
     "rollup": "^2.45.2",
     "rollup-plugin-typescript2": "^0.22.0",
     "tslib": "^2.2.0",
-    "typescript": "^4.2.4"
+    "typescript": "^4.2.4",
+    "webpack-cli": "^4.6.0"
   },
   "dependencies": {
+    "chai": "^4.3.4",
+    "kunit": "^1.2.2",
     "tsrpc-base-client": "^1.0.2-dev.5"
   }
 }

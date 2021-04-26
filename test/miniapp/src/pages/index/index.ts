@@ -1,5 +1,5 @@
-import { httpCase } from '../../cases/http.test';
-import { wsCase } from '../../cases/ws.test';
+import { kunit as httpCase } from '../../cases/http.test';
+import { kunit as wsCase } from '../../cases/ws.test';
 Page({
     async onLoad() {
         try {
