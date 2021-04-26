@@ -97,6 +97,7 @@ export class HttpClient<ServiceType extends BaseServiceType> extends BaseClient<
                 header: {
                     'content-type': this.options.json ? 'application/json' : 'application/octet-stream'
                 },
+                dataType: '其他',
                 responseType: this.options.json ? 'text' : 'arraybuffer',
                 success: res => {
                     pendingApiItem && this._onApiRes(res.data as ArrayBuffer | string, pendingApiItem);
