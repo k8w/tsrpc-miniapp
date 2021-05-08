@@ -26,6 +26,7 @@ export class HttpClient<ServiceType extends BaseServiceType> extends BaseClient<
         this.logger?.log('TSRPC HTTP Client :', this.options.server);
     }
 
+    /** @internal */
     protected _encodeApiReq(service: ApiService, req: any, pendingItem: PendingApiItem): EncodeOutput {
         if (this.options.json) {
             if (this.options.jsonPrune) {
@@ -45,6 +46,7 @@ export class HttpClient<ServiceType extends BaseServiceType> extends BaseClient<
         }
     }
 
+    /** @internal */
     protected _encodeClientMsg(service: MsgService, msg: any): EncodeOutput {
         if (this.options.json) {
             if (this.options.jsonPrune) {
@@ -197,7 +199,7 @@ export interface HttpClientTransportOptions extends TransportOptions {
 }
 
 export interface HttpClientOptions extends BaseClientOptions {
-    /** Server URL */
+    /** Server URL, starts with `http://` or `https://` */
     server: string;
 
     /**
@@ -214,8 +216,9 @@ export interface HttpClientOptions extends BaseClientOptions {
      */
     json: boolean;
     /**
-     * 是否剔除协议中未定义的多余字段
-     * 默认为 `true`
+     * Whether to automatically delete excess properties that not defined in the protocol.
+     * @defaultValue `true`
+     * @internal
      */
     jsonPrune: boolean;
 }
