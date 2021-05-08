@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "tsrpc": "^3.0.0-dev.3"
+    "tsrpc": "^3.0.0-dev.5"
   },
   "devDependencies": {
     "ts-node": "^9.1.1",

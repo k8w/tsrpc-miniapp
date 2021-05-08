@@ -4,7 +4,7 @@
   "main": "app.js",
   "scripts": {
     "build": "rm -rf dist && npx webpack",
-    "dev": "rm -rf dist && npx webpack -w"
+    "dev": "rm -rf dist && npx webpack -w --mode development"
   },
   "author": "",
   "license": "ISC",

@@ -1,10 +1,11 @@
 {
   "name": "tsrpc-miniapp",
-  "version": "3.0.0-dev.0",
+  "version": "3.0.0-dev.1",
   "description": "TSRPC MiniApp Client (Wechat App, QQ App...)",
   "main": "index.js",
   "scripts": {
-    "test": "npm run build && cd dist && npm link && cd ../test/server && npm i && cd ../miniapp && npm i && npm run build && cd ../ && START ts-node server && cd .. && echo \"请使用开发者工具打开test/miniapp目录完成测试\"",
+    "test:install": "cd test/server && npm i & cd ../miniapp && npm i & cd ../../",
+    "test": "npm run test:install && cd test/server && START npm run dev && cd ../miniapp && npm run dev && echo \"请使用开发者工具打开test/miniapp目录完成测试\" && cd ../../",
     "build": "npm run build:js && npm run build:dts && cp package.json LICENSE README.md dist/",
     "build:js": "rm -rf dist && npx rollup -c",
     "build:dts": "rm -rf lib && npx tsc && npx api-extractor run --local --verbose && node scripts/removePrivate.js && rm -rf lib",

@@ -3,10 +3,16 @@ import { ApiService, BaseClient, BaseClientOptions, defaultBaseClientOptions, Ms
 import { ApiReturn, BaseServiceType, ServiceProto, TsrpcError, TsrpcErrorType } from 'tsrpc-proto';
 import { MiniappObj } from './MiniappObj';
 
+/**
+ * HTTP Client for TSRPC.
+ * It uses `miniappObj.request` to send requests.
+ * @typeParam ServiceType - `ServiceType` from generated `proto.ts`
+ */
 export class HttpClient<ServiceType extends BaseServiceType> extends BaseClient<ServiceType> {
 
     readonly type = 'SHORT';
 
+    /** @internal */
     miniappObj: MiniappObj;
     private _jsonServer: string;
 
@@ -192,7 +198,7 @@ const defaultHttpClientOptions: HttpClientOptions = {
 
 export interface HttpClientTransportOptions extends TransportOptions {
     /**
-     * Data send progress
+     * Event when progress of data sent is changed
      * @param ratio - 0~1
      */
     onProgress: (ratio: number) => void;
@@ -204,15 +210,17 @@ export interface HttpClientOptions extends BaseClientOptions {
 
     /**
      * MiniApp API Object
-     * Wechat: wx
-     * QQ MiniApp: qq
-     * ByteDance MiniApp: tt
+     * @remarks
+     * - Wechat: `wx`
+     * - QQ MiniApp: `qq`
+     * - ByteDance MiniApp: `tt`
+     * @defaultValue `wx`
      */
     miniappObj: any
 
     /** 
      * Use JSON instead of Buffer
-     * @defaultValue false
+     * @defaultValue `false`
      */
     json: boolean;
     /**

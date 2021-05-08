@@ -1,9 +1,11 @@
-  export interface MiniappObj {
+/** @internal */
+export interface MiniappObj {
     request(options: RequestOptions): RequestTask;
     connectSocket(options: ConnectWebSocketOptions): SocketTask;
 
 }
 
+/** @internal */
 export interface RequestOptions {
     url: string,
     data?: string | object | ArrayBuffer,
@@ -20,12 +22,14 @@ export interface RequestOptions {
     complete?: (res: any) => void;
 }
 
+/** @internal */
 export interface RequestTask {
     abort(): void;
     onHeadersReceived(callback: (res: { header: object }) => void): void;
     offHeadersReceived(callback: Function): void;
 }
 
+/** @internal */
 export interface ConnectWebSocketOptions {
     url: string,
     header?: object,
@@ -37,6 +41,7 @@ export interface ConnectWebSocketOptions {
     complete?: (res: any) => void
 }
 
+/** @internal */
 export interface SocketTask {
     send(options: {
         data: string | ArrayBuffer,
