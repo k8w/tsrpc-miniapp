@@ -5,32 +5,34 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run build && cd dist && npm link && cd ../test/server && npm i && cd ../miniapp && npm i && npm run build && cd ../ && START ts-node server && cd .. && echo \"请使用开发者工具打开test/miniapp目录完成测试\"",
-    "build": "rm -rf dist && npx rollup -c && cp package.json package-lock.json LICENSE README.md dist/",
-    "build:debug": "rm -rf dist && npx tsc -d && cp package.json LICENSE README.md dist/"
+    "build": "npm run build:js && npm run build:dts && cp package.json LICENSE README.md dist/",
+    "build:js": "rm -rf dist && npx rollup -c",
+    "build:dts": "rm -rf lib && npx tsc && npx api-extractor run --local --verbose && node scripts/removePrivate.js && rm -rf lib",
+    "build:doc": "rm -rf docs/api && npx api-documenter markdown --input temp --output docs/api"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/k8w/tsrpc-miniapp.git"
   },
   "author": "",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/k8w/tsrpc-miniapp/issues"
   },
   "homepage": "https://github.com/k8w/tsrpc-miniapp#readme",
   "types": "index.d.ts",
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.13.1",
-    "@microsoft/api-extractor": "^7.14.0",
-    "rollup": "^2.45.2",
+    "@microsoft/api-documenter": "^7.13.6",
+    "@microsoft/api-extractor": "^7.15.1",
+    "chai": "^4.3.4",
+    "kunit": "^1.2.2",
+    "rollup": "^2.47.0",
     "rollup-plugin-typescript2": "^0.22.0",
     "tslib": "^2.2.0",
     "typescript": "^4.2.4",
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
-    "chai": "^4.3.4",
-    "kunit": "^1.2.2",
-    "tsrpc-base-client": "^1.0.2-dev.5"
+    "tsrpc-base-client": "^1.0.2-dev.15"
   }
 }
