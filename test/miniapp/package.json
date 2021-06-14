@@ -8,13 +8,12 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
-    "@types/chai": "^4.2.17",
-    "copy-webpack-plugin": "^8.1.1",
-    "ts-loader": "^9.1.1",
-    "webpack": "^5.35.1",
-    "webpack-cli": "^4.6.0"
+    "@types/chai": "^4.2.18",
+    "copy-webpack-plugin": "^9.0.0",
+    "ts-loader": "^9.2.3",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.2"
   },
   "description": ""
 }

@@ -103,6 +103,17 @@ export class WsClient<ServiceType extends BaseServiceType = any> extends BaseCli
             return { isSucc: true };
         }
 
+        // Pre Flow
+        let pre = await this.flows.preConnectFlow.exec({}, this.logger);
+        // Pre return
+        if (pre?.return) {
+            return pre.return;
+        }
+        // Canceled
+        if (!pre) {
+            return new Promise(rs => { });
+        }
+
         this.logger?.log(`Start connecting ${this.options.server}...`)
         this._promiseConnect = new Promise(rs => {
             let ws = this.miniappObj.connectSocket({
@@ -123,36 +134,47 @@ export class WsClient<ServiceType extends BaseServiceType = any> extends BaseCli
                 this._ws = ws;
                 this.logger?.log('WebSocket connected succ');
                 this.status = WsClientStatus.Opened;
+                this.flows.postConnectFlow.exec({}, this.logger);
             })
 
             ws.onError(res => {
                 this.logger?.error('[WebSocket Error]', res);
-                // 还在连接中，则连接失败
-                if (this._promiseConnect) {
-                    this._promiseConnect = undefined;
-                    rs({ isSucc: false, errMsg: res.errMsg || 'WebSocket Connect Error' });
-                }
             })
 
             ws.onClose(e => {
-                if (this._promiseConnect) {
-                    this._promiseConnect = undefined;
-                    rs({ isSucc: false, errMsg: 'WebSocket Closed' });
-                }
+                let isConnected = !!this._ws;
 
-                // 解引用
+                // 清空WebSocket 解引用
                 this._ws = undefined;
                 this.status = WsClientStatus.Closed;
 
+                // 连接中，返回连接失败
+                if (this._promiseConnect) {
+                    this._promiseConnect = undefined;
+                    rs({
+                        isSucc: false,
+                        errMsg: 'WebSocket connection to server failed'
+                    });
+                }
+
+                // disconnect中，返回成功
+                let isManual = !!this._rsDisconnecting;
                 if (this._rsDisconnecting) {
                     this._rsDisconnecting();
                     this._rsDisconnecting = undefined;
                     this.logger?.log('Disconnected succ', `code=${e.code} reason=${e.reason}`);
                 }
-                // 已连接上 非主动关闭 触发掉线
-                else {
+                // 非 disconnect 中，意外断开
+                else if (isConnected) {
                     this.logger?.log(`Lost connection to ${this.options.server}`, `code=${e.code} reason=${e.reason}`);
-                    this.options.onLostConnection?.();
+                }
+
+                // postDisconnectFlow，仅从连接状态断开时触发
+                if (isConnected) {
+                    this.flows.postDisconnectFlow.exec({
+                        reason: e.reason,
+                        isManual: isManual
+                    }, this.logger);
                 }
             });
 
