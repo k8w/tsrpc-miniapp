@@ -8,6 +8,7 @@ import { serviceProto } from '../../../protocols/proto';
 let client = new HttpClient(serviceProto, {
     miniappObj: wx,
     server: 'http://localhost:3000',
+    logger: console
 });
 
 export const kunit = new KUnit();

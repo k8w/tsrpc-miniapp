@@ -1,15 +1,13 @@
-import KUnit from 'kunit';
 import { assert } from 'chai';
-import { WsClient } from '../../../../src/WsClient';
-import { serviceProto } from '../../../protocols/proto';
-import { MsgChat } from '../../../protocols/MsgChat';
+import KUnit from 'kunit';
 import { TsrpcError, TsrpcErrorType } from 'tsrpc-proto';
+import { WsClient } from '../../../../src/WsClient';
+import { MsgChat } from '../../../protocols/MsgChat';
+import { serviceProto } from '../../../protocols/proto';
 
 export let client = new WsClient(serviceProto, {
     server: 'ws://127.0.0.1:4000',
-    onStatusChange: v => {
-        console.log('[WS] Client Status Change', v)
-    }
+    logger: console
 });
 
 export const kunit = new KUnit();
