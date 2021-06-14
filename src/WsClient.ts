@@ -7,7 +7,7 @@ import { MiniappObj, SocketTask } from "./MiniappObj";
  * It uses native `miniappObj.connectSocket` of mini app.
  * @typeParam ServiceType - `ServiceType` from generated `proto.ts`
  */
-export class WsClient<ServiceType extends BaseServiceType> extends BaseClient<ServiceType> {
+export class WsClient<ServiceType extends BaseServiceType = any> extends BaseClient<ServiceType> {
 
     readonly type = 'LONG';
 

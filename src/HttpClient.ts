@@ -8,7 +8,7 @@ import { MiniappObj } from './MiniappObj';
  * It uses `miniappObj.request` to send requests.
  * @typeParam ServiceType - `ServiceType` from generated `proto.ts`
  */
-export class HttpClient<ServiceType extends BaseServiceType> extends BaseClient<ServiceType> {
+export class HttpClient<ServiceType extends BaseServiceType = any> extends BaseClient<ServiceType> {
 
     readonly type = 'SHORT';
 
