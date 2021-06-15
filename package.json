@@ -1,6 +1,6 @@
 {
   "name": "tsrpc-miniapp",
-  "version": "3.0.0-dev.3",
+  "version": "3.0.0-dev.4",
   "description": "TSRPC MiniApp Client (Wechat App, QQ App...)",
   "main": "index.js",
   "scripts": {
@@ -34,6 +34,6 @@
     "webpack-cli": "^4.7.2"
   },
   "dependencies": {
-    "tsrpc-base-client": "^1.0.2-dev.28"
+    "tsrpc-base-client": "^1.0.2-dev.43"
   }
 }
