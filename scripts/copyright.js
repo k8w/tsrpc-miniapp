@@ -1,7 +1,7 @@
 module.exports = `/*!
  * TSRPC Miniapp v${require('../package.json').version}
  * -----------------------------------------
- * Copyright (c) Kingworks Corporation.
+ * Copyright (c) King Wang.
  * MIT License
- * https://github.com/k8w/tsrpc-browser
+ * https://github.com/k8w/tsrpc-miniapp
  */`
