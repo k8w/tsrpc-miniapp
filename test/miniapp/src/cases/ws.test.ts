@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import KUnit from 'kunit';
+import { KUnit } from 'kunit';
 import { TsrpcError, TsrpcErrorType } from 'tsrpc-proto';
 import { WsClient } from '../../../../src/client/WsClient';
 import { MsgChat } from '../../../protocols/MsgChat';

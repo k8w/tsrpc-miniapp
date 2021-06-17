@@ -41,7 +41,7 @@
     "minifyWXSS": true
   },
   "compileType": "miniprogram",
-  "libVersion": "2.9.4",
+  "libVersion": "2.11.2",
   "appid": "wx45dfe3f30c0c8d0a",
   "projectname": "TSRPC%20MiniApp%20%E6%B5%8B%E8%AF%95",
   "debugOptions": {
