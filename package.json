@@ -1,6 +1,6 @@
 {
   "name": "tsrpc-miniapp",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "TSRPC MiniApp Client (Wechat App, QQ App...)",
   "main": "index.js",
   "scripts": {
@@ -23,19 +23,19 @@
   "homepage": "https://github.com/k8w/tsrpc-miniapp#readme",
   "types": "index.d.ts",
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.13.33",
-    "@microsoft/api-extractor": "^7.18.4",
-    "@rollup/plugin-commonjs": "^19.0.1",
+    "@microsoft/api-documenter": "^7.13.39",
+    "@microsoft/api-extractor": "^7.18.5",
+    "@rollup/plugin-commonjs": "^19.0.2",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "chai": "^4.3.4",
     "kunit": "^1.3.0",
-    "rollup": "^2.54.0",
+    "rollup": "^2.56.2",
     "rollup-plugin-typescript2": "^0.30.0",
     "typescript": "^4.3.5",
     "webpack-cli": "^4.7.2"
   },
   "dependencies": {
-    "tslib": "^2.3.0",
-    "tsrpc-base-client": "^1.0.7-dev.1"
+    "tslib": "^2.3.1",
+    "tsrpc-base-client": "~1.0.8"
   }
 }
