@@ -36,10 +36,22 @@ export class HttpProxy implements IHttpProxy {
             dataType: '其他',
             responseType: options.responseType,
             success: res => {
-                rs({
-                    isSucc: true,
-                    res: typeof res.data === 'string' ? res.data : new Uint8Array(res.data as ArrayBuffer)
-                })
+                if (res.statusCode === 200) {
+                    rs({
+                        isSucc: true,
+                        res: typeof res.data === 'string' ? res.data : new Uint8Array(res.data as ArrayBuffer)
+                    })
+                }
+                else {
+                    rs({
+                        isSucc: false,
+                        err: new TsrpcError({
+                            message: 'HTTP Error ' + res.statusCode,
+                            type: TsrpcError.Type.ServerError,
+                            httpCode: res.statusCode
+                        })
+                    })
+                }
             },
             fail: res => {
                 rs({
