@@ -1,4 +1,4 @@
-import { BaseWsClient, BaseWsClientOptions, defaultBaseWsClientOptions } from "tsrpc-base-client";
+import { BaseClient, BaseWsClient, BaseWsClientOptions, defaultBaseWsClientOptions } from "tsrpc-base-client";
 import { BaseServiceType, ServiceProto } from "tsrpc-proto";
 import { WebSocketProxy } from "./WebSocketProxy";
 
@@ -42,3 +42,7 @@ export interface WsClientOptions extends BaseWsClientOptions {
     /** Extra options to wx.connectSocket */
     connectSocketOptions?: object;
 }
+
+let a!: WsClient<any>;
+let b: BaseClient<any> = a;
+console.log(b)
