@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [3.0.10] - 2021-10-13
+### Changed
+- `HttpClient` and `WsClient` no longer have default type param
+
 ## [3.0.6] - 2021-09-01
 ### Fixed
 - `HttpProxy` 检查返回码是否为 200

@@ -6,7 +6,7 @@ import { WsClient } from "./WsClient";
 export class WebSocketProxy implements IWebSocketProxy {
     options!: IWebSocketProxy['options'];
     miniappObj!: MiniappObj;
-    client!: WsClient;
+    client!: WsClient<any>;
 
     private _ws?: SocketTask;
     connect(server: string): void {
