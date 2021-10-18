@@ -29,6 +29,7 @@ export class HttpClient<ServiceType extends BaseServiceType> extends BaseHttpCli
 const defaultHttpClientOptions: HttpClientOptions = {
     ...defaultBaseHttpClientOptions,
     miniappObj: typeof wx !== 'undefined' ? wx : undefined as any,
+    customObjectIdClass: String,
 }
 
 export interface HttpClientOptions extends BaseHttpClientOptions {

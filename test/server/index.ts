@@ -1,6 +1,6 @@
 import * as path from "path";
 import { HttpServer, PrefixLogger, TerminalColorLogger, WsServer } from 'tsrpc';
-import { serviceProto } from '../protocols/proto';
+import { serviceProto } from '../protocols/serviceProto';
 let server = new HttpServer(serviceProto, {
     cors: '*',
     port: 3000,

@@ -3,7 +3,7 @@ import { KUnit } from 'kunit';
 import { TsrpcError, TsrpcErrorType } from 'tsrpc-proto';
 import { WsClient } from '../../../../src/client/WsClient';
 import { MsgChat } from '../../../protocols/MsgChat';
-import { serviceProto } from '../../../protocols/proto';
+import { serviceProto } from '../../../protocols/serviceProto';
 
 export let client = new WsClient(serviceProto, {
     server: 'ws://127.0.0.1:4000',
@@ -65,6 +65,16 @@ kunit.test('TsrpcError', async function () {
             })
         });
     }
+})
+
+kunit.test('ObjectID', async function () {
+    // ObjectId
+    let objId1 = '616d62d2af8690290c9bd2ce';
+    let ret = await client.callApi('ObjId', {
+        id1: objId1
+    });
+    assert.strictEqual(ret.isSucc, true, ret.err?.message);
+    assert.strictEqual(objId1, ret.res!.id2);
 })
 
 kunit.test('sendMsg', async function () {

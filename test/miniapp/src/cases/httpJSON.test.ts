@@ -3,7 +3,7 @@ import { KUnit } from 'kunit';
 import { TsrpcError, TsrpcErrorType } from 'tsrpc-proto';
 import { HttpClient } from '../../../../src/client/HttpClient';
 import { MsgChat } from '../../../protocols/MsgChat';
-import { serviceProto } from '../../../protocols/proto';
+import { serviceProto } from '../../../protocols/serviceProto';
 
 let client = new HttpClient(serviceProto, {
     miniappObj: wx,

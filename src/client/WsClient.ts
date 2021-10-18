@@ -29,6 +29,7 @@ export class WsClient<ServiceType extends BaseServiceType> extends BaseWsClient<
 const defaultWsClientOptions: WsClientOptions = {
     ...defaultBaseWsClientOptions,
     miniappObj: typeof wx !== 'undefined' ? wx : undefined as any,
+    customObjectIdClass: String,
 }
 
 export interface WsClientOptions extends BaseWsClientOptions {

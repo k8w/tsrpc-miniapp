@@ -3,7 +3,7 @@ import { KUnit } from 'kunit';
 import { TsrpcError, TsrpcErrorType } from 'tsrpc-proto';
 import { HttpClient } from '../../../../src/client/HttpClient';
 import { MsgChat } from '../../../protocols/MsgChat';
-import { serviceProto } from '../../../protocols/proto';
+import { serviceProto } from '../../../protocols/serviceProto';
 
 let client = new HttpClient(serviceProto, {
     miniappObj: wx,
@@ -114,3 +114,17 @@ kunit.test('client timeout', async function () {
         })
     });
 });
+
+kunit.test('ObjectID', async function () {
+    let client = new HttpClient(serviceProto, {
+        logger: console
+    });
+
+    // ObjectId
+    let objId1 = '616d62d2af8690290c9bd2ce';
+    let ret = await client.callApi('ObjId', {
+        id1: objId1
+    });
+    assert.strictEqual(ret.isSucc, true, ret.err?.message);
+    assert.strictEqual(objId1, ret.res!.id2);
+})
