@@ -6,11 +6,11 @@ import { MsgChat } from '../../../proto/MsgChat';
 import { ReqExtendData } from '../../../proto/PtlExtendData';
 import { serviceProto } from '../../../proto/serviceProto';
 
-
 export let client = new WsClient(serviceProto, {
-    server: 'ws://127.0.0.1:4000',
+    server: 'ws://127.0.0.1:4001',
     logger: console,
-    debugBuf: true
+    debugBuf: true,
+    json: true
 });
 
 export const kunit = new KUnit();

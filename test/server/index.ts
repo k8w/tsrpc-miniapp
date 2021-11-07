@@ -1,6 +1,6 @@
 import * as path from "path";
 import { HttpServer, PrefixLogger, TerminalColorLogger, WsServer } from 'tsrpc';
-import { serviceProto } from '../protocols/serviceProto';
+import { serviceProto } from '../proto/serviceProto';
 let server = new HttpServer(serviceProto, {
     cors: '*',
     port: 3000,
@@ -8,7 +8,8 @@ let server = new HttpServer(serviceProto, {
         logger: new TerminalColorLogger(),
         prefixs: ['[HTTP]']
     }),
-    jsonEnabled: true
+    jsonEnabled: true,
+    debugBuf: true
 })
 server.autoImplementApi(path.resolve(__dirname, 'api'));
 server.start();
@@ -43,3 +44,35 @@ wsServer.listenMsg('Chat', async call => {
     })
 })
 wsServer.start();
+
+let wsServerJSON = new WsServer(serviceProto, {
+    port: 4001,
+    jsonEnabled: true,
+    logger: new PrefixLogger({
+        logger: new TerminalColorLogger(),
+        prefixs: ['[WS]']
+    })
+})
+wsServerJSON.autoImplementApi(path.resolve(__dirname, 'api'));
+wsServerJSON.listenMsg('Chat', async call => {
+    call.conn.sendMsg('Chat', {
+        ...call.msg,
+        userName: 'System',
+        time: 111
+    });
+
+    setTimeout(() => {
+        call.conn.sendMsg('Chat', {
+            ...call.msg,
+            userName: 'System',
+            time: 222
+        });
+    }, 200);
+
+    await new Promise<void>(rs => {
+        setTimeout(() => {
+            rs();
+        }, 1000)
+    })
+})
+wsServerJSON.start();

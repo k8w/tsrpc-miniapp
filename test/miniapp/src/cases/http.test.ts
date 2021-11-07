@@ -2,13 +2,14 @@ import { assert } from 'chai';
 import { KUnit } from 'kunit';
 import { TsrpcError, TsrpcErrorType } from 'tsrpc-proto';
 import { HttpClient } from '../../../../src/client/HttpClient';
-import { MsgChat } from '../../../protocols/MsgChat';
-import { serviceProto } from '../../../protocols/serviceProto';
+import { MsgChat } from '../../../proto/MsgChat';
+import { ReqExtendData } from '../../../proto/PtlExtendData';
+import { serviceProto } from '../../../proto/serviceProto';
 
-let client = new HttpClient(serviceProto, {
-    miniappObj: wx,
+export let client = new HttpClient(serviceProto, {
     server: 'http://localhost:3000',
-    logger: console
+    logger: console,
+    debugBuf: true
 });
 
 export const kunit = new KUnit();
@@ -35,9 +36,11 @@ kunit.test('CallApi normally', async function () {
 
 kunit.test('Inner Error', async function () {
     for (let v of ['Test', 'a/b/c/Test']) {
-        assert.deepStrictEqual(await client.callApi(v as any, {
+        let ret = await client.callApi(v as any, {
             name: 'InnerError'
-        }), {
+        });
+        console.log('aaa', (ret.err as any).__proto__ === TsrpcError.prototype)
+        assert.deepStrictEqual(ret, {
             isSucc: false,
             err: new TsrpcError('Internal Server Error', {
                 code: 'INTERNAL_ERR',
@@ -115,16 +118,19 @@ kunit.test('client timeout', async function () {
     });
 });
 
-kunit.test('ObjectID', async function () {
-    let client = new HttpClient(serviceProto, {
-        logger: console
+kunit.test('ExtendData', async function () {
+    let data: ReqExtendData['data'] = {
+        objectId: '616d62d2af8690290c9bd2ce',
+        date: new Date('2021/11/7'),
+        buf: new Uint8Array([1, 2, 3, 4, 5, 255, 254, 253, 252, 251, 250])
+    }
+    let ret = await client.callApi('ExtendData', {
+        data: data
     });
-
-    // ObjectId
-    let objId1 = '616d62d2af8690290c9bd2ce';
-    let ret = await client.callApi('ObjId', {
-        id1: objId1
+    assert.deepStrictEqual(ret, {
+        isSucc: true,
+        res: {
+            data: data
+        }
     });
-    assert.strictEqual(ret.isSucc, true, ret.err?.message);
-    assert.strictEqual(objId1, ret.res!.id2);
 })
