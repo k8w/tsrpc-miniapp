@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [3.1.3] - 2021-12-03
+### Added
+- log `[SendMsgErr]`
+
 ## [3.1.2] - 2021-11-17
 ## Changed
 - Update dependencies
