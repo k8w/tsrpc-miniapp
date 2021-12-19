@@ -9,10 +9,11 @@ export class WebSocketProxy implements IWebSocketProxy {
     client!: WsClient<any>;
 
     private _ws?: SocketTask;
-    connect(server: string): void {
+    connect(server: string, protocols?: string[]): void {
         this._ws = this.miniappObj.connectSocket({
             ...this.client.options.connectSocketOptions,
-            url: server
+            url: server,
+            protocols: protocols
         });
 
         this._ws.onOpen(header => {

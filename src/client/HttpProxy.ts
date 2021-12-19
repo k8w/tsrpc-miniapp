@@ -36,7 +36,7 @@ export class HttpProxy implements IHttpProxy {
             dataType: '其他',
             responseType: options.responseType,
             success: res => {
-                if (res.statusCode === 200) {
+                if (res.statusCode === 200 || res.statusCode === 500) {
                     rs({
                         isSucc: true,
                         res: typeof res.data === 'string' ? res.data : new Uint8Array(res.data as ArrayBuffer)
