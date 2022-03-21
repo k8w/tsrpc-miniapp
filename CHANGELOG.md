@@ -1,4 +1,9 @@
 # CHANGELOG
+
+## [3.2.2] - 2022-03-21
+### Fixed
+- `postDisconnectFlow` not executed when `disconnect()` manually
+
 ## [3.2.0] - 2022-02-26
 ### Added
 - Support using `keyof`
