@@ -4,9 +4,19 @@ import { MiniappObj } from '../models/MiniappObj';
 
 export class HttpProxy implements IHttpProxy {
 
-    miniappObj!: MiniappObj;
+    miniappObj?: MiniappObj;
 
     fetch(options: Parameters<IHttpProxy['fetch']>[0]): ReturnType<IHttpProxy['fetch']> {
+        if (!this.miniappObj) {
+            return {
+                abort: () => { },
+                promise: Promise.resolve({
+                    isSucc: false,
+                    err: new TsrpcError('miniappObj is not set, please check if this is miniapp environment.', { type: TsrpcError.Type.ClientError })
+                })
+            }
+        }
+
         let rs!: (v: { isSucc: true, res: string | Uint8Array } | { isSucc: false, err: TsrpcError }) => void;
         let promise: ReturnType<IHttpProxy['fetch']>['promise'] = new Promise(_rs => {
             rs = _rs;

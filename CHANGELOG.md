@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [3.2.3] - 2022-04-11
+### Fixed
+- `new HttpClient()` in non-miniapp envioronment will not throw an error any more, the error would be delayed until `callApi()`
+
 ## [3.2.2] - 2022-03-21
 ### Fixed
 - `postDisconnectFlow` not executed when `disconnect()` manually

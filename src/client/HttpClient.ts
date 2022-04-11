@@ -18,9 +18,6 @@ export class HttpClient<ServiceType extends BaseServiceType> extends BaseHttpCli
             ...options
         });
 
-        if (!this.options.miniappObj) {
-            throw new Error('options.miniappObj is not set');
-        }
         httpProxy.miniappObj = this.options.miniappObj;
     }
 
