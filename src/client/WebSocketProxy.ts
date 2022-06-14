@@ -21,7 +21,7 @@ export class WebSocketProxy implements IWebSocketProxy {
         })
 
         this._ws.onError(res => {
-            this.options.onError(new Error(res.errMsg));
+            this.options.onError(res);
         })
 
         this._ws.onClose(e => {
