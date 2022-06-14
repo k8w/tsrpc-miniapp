@@ -1,4 +1,3 @@
-// @ts-ignore
 import { ObjectId } from "mongodb";
 
 export interface ReqExtendData {

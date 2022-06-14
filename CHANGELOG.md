@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## [3.3.1-dev.0] - 2022-06-14
+## [3.4.0] - 2022-06-14
 ### Changed
 - Update `ws.onError`
+- Update deps
 
 ## [3.3.0] - 2022-04-15
 ### Added
