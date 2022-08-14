@@ -41,7 +41,12 @@ export class WebSocketProxy implements IWebSocketProxy {
     close(code?: number, reason?: string): void {
         this._ws?.close({
             code: code,
-            reason: reason
+            reason: reason,
+            fail: (res) => {
+                // 重试一次
+                console.error('WebSocket closed failed', res);
+                this._ws?.close();
+            }
         });
         this._ws = undefined;
     }
