@@ -10,26 +10,45 @@ export class WebSocketProxy implements IWebSocketProxy {
 
     private _ws?: SocketTask;
     connect(server: string, protocols?: string[]): void {
-        this._ws = this.miniappObj.connectSocket({
+        const ws = this.miniappObj.connectSocket({
             ...this.client.options.connectSocketOptions,
             url: server,
             protocols: protocols
         });
+        this._ws = ws;
 
         this._ws.onOpen(header => {
+            if (this._ws !== ws) {
+                return;
+            }
+
             this.options.onOpen();
         })
 
         this._ws.onError(res => {
+            if (this._ws !== ws) {
+                return;
+            }
+
+            ws.close();
+            this._ws = undefined;
             this.options.onError(res);
         })
 
         this._ws.onClose(e => {
-            this.options.onClose(e.code, e.reason);
+            if (this._ws !== ws) {
+                return;
+            }
+
             this._ws = undefined;
+            this.options.onClose(e.code, e.reason);
         });
 
         this._ws.onMessage(e => {
+            if (this._ws !== ws) {
+                return;
+            }
+
             if (typeof e.data === 'string') {
                 this.options.onMessage(e.data);
             }

@@ -1,6 +1,6 @@
 {
   "name": "tsrpc-miniapp",
-  "version": "3.4.11",
+  "version": "3.4.12-dev.0",
   "description": "TSRPC MiniApp Client (Wechat App, QQ App...)",
   "main": "index.js",
   "exports": {
