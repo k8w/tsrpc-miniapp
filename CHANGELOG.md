@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [3.4.13] - 2023-05-23
+### Changed
+- Update deps (Fixed cocos supporting bug)
+
 ## [3.4.12] - 2023-03-21
 
 ### Fixed
