@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [3.4.15] - 2024-05-05
+### Fixed
+- Update dependencies `tsbuffer`
+
 ## [3.4.13] - 2023-05-23
 ### Changed
 - Update deps (Fixed cocos supporting bug)
